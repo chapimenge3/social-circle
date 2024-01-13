@@ -2,6 +2,8 @@
 
 ## Commands
 
+Backend specific documentation can be found [here](backend/README.md) or go to [backend](backend) directory.
+
 ### Run Server
 
 ```bash
