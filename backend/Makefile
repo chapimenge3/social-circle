@@ -22,7 +22,7 @@ stop:
 makemigrations:
 	@echo "Making migrations for social circle project"
 	@echo "Make sure to run the server before running this command"
-	./manage.py makemigrations
+	docker compose exec web python manage.py makemigrations $(app)
 
 migrate:
 	@echo "Migrating for social circle project"

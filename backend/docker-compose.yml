@@ -3,7 +3,7 @@ version: '3.9'
 services:
   web:
     build: .
-    command: python /code/manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code:z
       # for file upload to work
@@ -15,16 +15,13 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:${POSTGRES_VERSION}
+    image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - 5432:5432
+      - POSTGRES_DB=social_circle
+      - POSTGRES_USER=social_circle_user
+      - POSTGRES_PASSWORD=social_circle_password
 
 volumes:
   postgres_data:
