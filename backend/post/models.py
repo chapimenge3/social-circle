@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import uuid4 as uuid
 from datetime import datetime
 
@@ -86,9 +87,15 @@ class Post(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.author} posted {self.body}"
+
+    def delete(self, *args: Any, **kwargs: Any) :
+        self.is_deleted = True
+        return super().delete(*args, **kwargs)
 
     class Meta:
         ordering = ("-created_at",)

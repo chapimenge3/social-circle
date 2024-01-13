@@ -13,9 +13,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # My Apps
     "authentication",
     "post",
+    "social_network",
+
     # Third Party Apps
     "rest_framework",
     "djoser",
@@ -67,7 +70,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # DATABASE SETTINGS
-DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.sqlite3")
 DB_CONFIG = {
     "ENGINE": DB_ENGINE,
 }
