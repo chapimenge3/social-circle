@@ -13,9 +13,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # My Apps
     "authentication",
     "post",
+    "social_network",
+
     # Third Party Apps
     "rest_framework",
     "djoser",
