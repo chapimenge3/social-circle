@@ -67,7 +67,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # DATABASE SETTINGS
-DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.sqlite3")
 DB_CONFIG = {
     "ENGINE": DB_ENGINE,
 }
