@@ -15,8 +15,13 @@ urlpatterns = [
     ),
     path("friend-request/", views.FriendRequestView.as_view(), name="friend-request"),
     path(
-        "friend-request/accept/",
-        views.accept_friend_request,
+        "friend-request/received/",
+        views.FriendRequestReceivedView.as_view(),
+        name="friend-request-recieved",
+    ),
+    path(
+        "friend-request/accept/<int:pk>/",
+        views.AcceptFriendRequestView.as_view(),
         name="accept-friend-request",
     )
 ]
