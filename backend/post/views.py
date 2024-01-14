@@ -1,6 +1,10 @@
+from django.db.models import Q
+
 from rest_framework import viewsets, serializers
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
+
+from social_network.models import Friends
 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
@@ -61,5 +65,15 @@ class LikeView(CreateAPIView, DestroyAPIView):
     def get_queryset(self):
         return Like.objects.filter(liker=self.request.user)
 
-    # def get_object(self):
-        # return self.get_queryset().get()
+
+class FeedViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["get"]
+
+    def get_queryset(self):
+        friends = Friends.objects.filter(
+            Q(user=self.request.user) | Q(friend=self.request.user),
+            accepted_at__isnull=False).values_list('friend', flat=True)
+        return Post.objects.filter(author__in=friends)

@@ -5,7 +5,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
-# router.register(r"friends", views.Friends, basename="friends")
+router.register(r"", views.FriendsView, basename="friends")
 
 urlpatterns = [
     path(
@@ -18,9 +18,7 @@ urlpatterns = [
         "friend-request/accept/",
         views.accept_friend_request,
         name="accept-friend-request",
-    ),
+    )
 ]
 
 urlpatterns += router.urls
-
-# urlpatterns = format_suffix_patterns(urlpatterns)

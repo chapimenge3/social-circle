@@ -13,6 +13,7 @@ from .serializers import FriendRequestSerializer, FriendsSerializer
 
 User = get_user_model()
 
+
 class FriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -87,7 +88,7 @@ class FriendRequestDetailsView(APIView):
         return FriendRequest.objects.filter(
             user=self.request.user, is_deleted=False, is_accepted=False
         )
-    
+
     def get_object(self):
         try:
             return self.get_queryset().get(pk=self.kwargs.get("pk"))
@@ -138,14 +139,52 @@ def accept_friend_request(request, pk):
         raise serializers.ValidationError("This friend request doesn't exist")
 
     if friend_request.friend != request.user:
-        raise serializers.ValidationError("You can't accept this friend request")
+        raise serializers.ValidationError(
+            "You can't accept this friend request")
 
     if friend_request.is_accepted:
-        raise serializers.ValidationError("This friend request is already accepted")
+        raise serializers.ValidationError(
+            "This friend request is already accepted")
 
     friend_request.is_accepted = True
     friend_request.save()
 
-    Friends.objects.create(user=friend_request.user, friend=friend_request.friend)
+    Friends.objects.create(user=friend_request.user,
+                           friend=friend_request.friend)
 
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FriendsView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FriendsSerializer
+    http_method_names = ["get", "delete"]
+
+    def get_queryset(self):
+        return Friends.objects.filter(
+            user=self.request.user, is_deleted=False
+        )
+
+    def get_object(self):
+        try:
+            return self.get_queryset().get(pk=self.kwargs.get("pk"))
+        except Friends.DoesNotExist:
+            return None
+
+    def destroy(self, request, pk):
+        friend = self.get_object()
+        if not friend:
+            return Response(
+                data={"detail": "This friend doesn't exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if friend.user != request.user:
+            return Response(
+                data={"detail": "You can't delete this friend"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        friend.is_deleted = True
+        friend.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

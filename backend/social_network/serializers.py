@@ -9,7 +9,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ("id", "user", "friend", "is_accepted", "created_at", "updated_at", "is_deleted")
+        fields = ("id", "user", "friend", "is_accepted",
+                  "created_at", "updated_at", "is_deleted")
 
     def validate(self, attrs):
         # check if the friend request is update and the user is the same
@@ -39,13 +40,12 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
 
 class FriendsSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source="user.username")
     friend = serializers.ReadOnlyField(source="friend.username")
     accepted_at = serializers.ReadOnlyField()
 
     class Meta:
         model = Friends
-        fields = ("id", "user", "friend", "accepted_at", "created_at", "updated_at")
+        fields = ("id", "friend", "accepted_at", "created_at")
 
     def validate(self, attrs):
         # check if the friend request is update and the user is the same
