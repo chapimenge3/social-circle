@@ -16,7 +16,7 @@ Faker==22.2.0
 httpx==0.24.1
 idna==3.4
 oauthlib==3.2.2
-Pillow==9.5.0
+Pillow==10.0.1
 psycopg2==2.9.6
 psycopg2-binary==2.9.6
 pycparser==2.21
