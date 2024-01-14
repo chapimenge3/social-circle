@@ -155,9 +155,8 @@ class AcceptFriendRequestView(APIView):
         # User can't accept a friend request that is his
         # User can't accept a friend request that is already a friend
 
-        try:
-            friend_request = self.get_object(pk)
-        except FriendRequest.DoesNotExist:
+        friend_request = self.get_object(pk)
+        if not friend_request:
             raise serializers.ValidationError(
                 "This friend request doesn't exist")
 
@@ -206,4 +205,50 @@ class FriendsView(viewsets.ModelViewSet):
 
         friend.is_deleted = True
         friend.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RejectFriendRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return FriendRequest.objects.filter(
+                is_deleted=False, is_accepted=False, friend=self.request.user
+            ).get(pk=pk)
+        except FriendRequest.DoesNotExist:
+            return None
+
+    def post(self, request, pk):
+        # User can't decline a friend request that is not his
+        # User can't decline a friend request that is already accepted
+        # User can't decline a friend request that is already rejected
+        # User can't decline a friend request that is deleted
+        # User can't decline a friend request that doesn't exist
+        # User can't decline a friend request that is his
+        # User can't decline a friend request that is already a friend
+
+        friend_request = self.get_object(pk)
+        if friend_request is None:
+            return Response(
+                data={"detail": "This friend request doesn't exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if friend_request.friend != request.user:
+            return Response(
+                data={"detail": "You can't decline this friend request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if friend_request.is_accepted:
+            return Response(
+                data={"detail": "This friend request is already accepted"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        friend_request.is_accepted = False
+        friend_request.is_deleted = True
+        friend_request.save()
+
         return Response(status=status.HTTP_204_NO_CONTENT)

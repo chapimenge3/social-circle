@@ -23,7 +23,12 @@ urlpatterns = [
         "friend-request/accept/<int:pk>/",
         views.AcceptFriendRequestView.as_view(),
         name="accept-friend-request",
-    )
+    ),
+    path(
+        "friend-request/reject/<int:pk>/",
+        views.RejectFriendRequestView.as_view(),
+        name="reject-friend-request",
+    ),
 ]
 
 urlpatterns += router.urls
