@@ -13,25 +13,6 @@ from .serializers import FriendRequestSerializer, FriendsSerializer
 
 User = get_user_model()
 
-# class FriendRequestViewSet(viewsets.ModelViewSet):
-#     queryset = FriendRequest.objects.all()
-#     serializer_class = FriendRequestSerializer
-#     permission_classes = [IsAuthenticated]
-#     http_method_names = ["get", "post", "delete"]
-
-#     def get_queryset(self):
-#         return self.queryset.filter(
-#             user=self.request.user, is_deleted=False, is_accepted=False
-#         )
-
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user)
-
-#     def perform_destroy(self, instance):
-#         instance.is_deleted = True
-#         instance.save()
-
-
 class FriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
