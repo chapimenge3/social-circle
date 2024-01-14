@@ -252,3 +252,5 @@ class RejectFriendRequestView(APIView):
         friend_request.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
