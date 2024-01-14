@@ -196,8 +196,7 @@ class FriendsView(viewsets.ModelViewSet):
                 data={"detail": "This friend doesn't exist"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        if friend.user != request.user:
+        if request.user not in (friend.user, friend.friend): 
             return Response(
                 data={"detail": "You can't delete this friend"},
                 status=status.HTTP_400_BAD_REQUEST,
