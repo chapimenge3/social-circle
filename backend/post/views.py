@@ -42,9 +42,11 @@ class PostViewSet(CommonViewSet):
     API endpoint that allows posts to be viewed or edited.
     """
 
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user, is_deleted=False)
 
 
 class CommentViewSet(CommonViewSet):
