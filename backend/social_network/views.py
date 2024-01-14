@@ -124,35 +124,54 @@ class FriendRequestDetailsView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def accept_friend_request(request, pk):
-    # User can't accept a friend request that is not his
-    # User can't accept a friend request that is already accepted
-    # User can't accept a friend request that is already rejected
-    # User can't accept a friend request that is deleted
-    # User can't accept a friend request that doesn't exist
-    # User can't accept a friend request that is his
-    # User can't accept a friend request that is already a friend
+class FriendRequestReceivedView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    try:
-        friend_request = FriendRequest.objects.get(pk=pk)
-    except FriendRequest.DoesNotExist:
-        raise serializers.ValidationError("This friend request doesn't exist")
+    def get(self, request):
+        queryset = FriendRequest.objects.filter(
+            friend=request.user, is_deleted=False, is_accepted=False
+        )
+        serializer = FriendRequestSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-    if friend_request.friend != request.user:
-        raise serializers.ValidationError(
-            "You can't accept this friend request")
 
-    if friend_request.is_accepted:
-        raise serializers.ValidationError(
-            "This friend request is already accepted")
+class AcceptFriendRequestView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    friend_request.is_accepted = True
-    friend_request.save()
+    def get_object(self, pk):
+        try:
+            return FriendRequest.objects.filter(
+                is_deleted=False, is_accepted=False, friend=self.request.user
+            ).get(pk=pk)
+        except FriendRequest.DoesNotExist:
+            return None
 
-    Friends.objects.create(user=friend_request.user,
-                           friend=friend_request.friend)
+    def post(self, request, pk):
+        # User can't accept a friend request that is not his
+        # User can't accept a friend request that is already accepted
+        # User can't accept a friend request that is already rejected
+        # User can't accept a friend request that is deleted
+        # User can't accept a friend request that doesn't exist
+        # User can't accept a friend request that is his
+        # User can't accept a friend request that is already a friend
 
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            friend_request = self.get_object(pk)
+        except FriendRequest.DoesNotExist:
+            raise serializers.ValidationError(
+                "This friend request doesn't exist")
+
+        if friend_request.is_accepted:
+            raise serializers.ValidationError(
+                "This friend request is already accepted")
+
+        friend_request.is_accepted = True
+        friend_request.save()
+
+        Friends.objects.create(user=friend_request.user,
+                               friend=friend_request.friend)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FriendsView(viewsets.ModelViewSet):
